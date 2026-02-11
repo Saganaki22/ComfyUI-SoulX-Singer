@@ -1,5 +1,11 @@
 <div align="center">
   <h1>🎤 ComfyUI-SoulX-Singer</h1>
+
+
+
+<img width="480" height="268" alt="soulx-logo" src="https://github.com/user-attachments/assets/2157a133-cadc-49ce-8286-6634d85e9922" />
+
+  
   <p>
     ComfyUI custom nodes for<br>
     <b><em>SoulX-Singer: Towards High-Quality Zero-Shot Singing Voice Synthesis</em></b>
@@ -16,6 +22,9 @@
 </div>
 
 ---
+
+<img width="1900" height="979" alt="image" src="https://github.com/user-attachments/assets/4855913d-dadf-4527-905b-124725ba9f44" />
+
 
 ## 🎵 Overview
 
