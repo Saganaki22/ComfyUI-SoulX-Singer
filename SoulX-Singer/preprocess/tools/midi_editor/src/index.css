@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Space Grotesk', 'IBM Plex Sans', system-ui, sans-serif;
+  color: var(--text-primary);
+  background: radial-gradient(circle at 20% 20%, rgba(72, 228, 194, 0.08), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(75, 100, 188, 0.24), transparent 40%),
+    #0f1528;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root[data-theme='light'] {
+  background: radial-gradient(circle at 20% 20%, rgba(63, 140, 255, 0.08), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(75, 100, 188, 0.14), transparent 40%),
+    #f5f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: transparent;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
