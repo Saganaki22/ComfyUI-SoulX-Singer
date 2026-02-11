@@ -1,7 +1,7 @@
 [project]
 name = "Comfyui-SoulX-Singer"
 description = "ComfyUI custom nodes for SoulX-Singer - Zero-Shot Singing Voice Synthesis"
-version = "0.6.0"
+version = "0.6.1"
 license = {file = "LICENSE"}
 dependencies = ["torch", "soundfile", "librosa", "numpy", "omegaconf", "huggingface_hub", "safetensors", "accelerate", "beartype", "einops", "funasr", "g2p_en", "g2pM", "gradio", "loralib", "matplotlib", "mido", "ml_collections", "nemo_toolkit", "nltk", "numba", "packaging", "praat-parselmouth", "pretty_midi", "pyloudnorm", "pyworld", "rotary_embedding_torch", "scikit_learn", "scipy", "scikit_image", "ToJyutping", "torchcodec", "tqdm", "transformers", "webrtcvad"]
 
@@ -11,7 +11,7 @@ Repository = "https://github.com/Saganaki22/ComfyUI-SoulX-Singer"
 
 
 [tool.comfy]
-PublisherId = "Saganaki22"
+PublisherId = "saganaki22"
 DisplayName = "SoulX-Singer"
 Icon = "https://avatars.githubusercontent.com/u/84208527"
 
