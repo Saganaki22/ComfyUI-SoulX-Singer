@@ -47,6 +47,25 @@ This ComfyUI wrapper provides native node-based integration with support for **m
 - **💾 Smart Caching** – Optional model caching with dtype/attention change detection
 - **🎹 MIDI Editor Support** – Advanced node for manual metadata editing workflow
 
+### Original Audio
+<audio controls>
+  <source src="https://huggingface.co/drbaph/SoulX-Singer/resolve/main/samples/song.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+### SpongeBob Voice
+
+
+
+https://github.com/user-attachments/assets/505e74b2-49b7-49bb-b017-ea60600b5173
+
+
+
+### Male Voice
+
+https://github.com/user-attachments/assets/d0cd4612-cdcc-4a03-8c38-4a71874c9bd2
+
+
 ---
 
 ## 📦 Installation
