@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+dev/
+results/
+wandb/
+.ipynb_checkpoints/
+.vscode/
+.cache
+local/
+outputs/
+
+*.pt
+*.ckpt
+
+# Logs
+logs/
+*.log
+results/
+runs/
+dev*
+local/
+generated/
+
+.DS_Store
+pretrained_models/
+
+*.err
+*.out
+
+# Dev
+dev/
+
+# Data
+data/
+outputs/
+deploy/
+.gradio/
