@@ -1,100 +1,9 @@
 {
   "id": "00000000-0000-0000-0000-000000000000",
   "revision": 0,
-  "last_node_id": 16,
-  "last_link_id": 13,
+  "last_node_id": 19,
+  "last_link_id": 22,
   "nodes": [
-    {
-      "id": 1,
-      "type": "SoulXSingerSimple",
-      "pos": [
-        3040.242836182374,
-        506.689649921544
-      ],
-      "size": [
-        270,
-        290
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "SOULX_MODEL",
-          "link": 1
-        },
-        {
-          "name": "prompt_audio",
-          "type": "AUDIO",
-          "link": 6
-        },
-        {
-          "name": "target_audio",
-          "type": "AUDIO",
-          "link": 7
-        }
-      ],
-      "outputs": [
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "links": [
-            5
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SoulXSingerSimple"
-      },
-      "widgets_values": [
-        "English",
-        "English",
-        "melody",
-        true,
-        true,
-        true,
-        0,
-        32,
-        3
-      ],
-      "color": "#42794b",
-      "bgcolor": "#42794b"
-    },
-    {
-      "id": 7,
-      "type": "SaveAudioMP3",
-      "pos": [
-        3381.5899354897447,
-        519.3309357403483
-      ],
-      "size": [
-        270,
-        136
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "link": 5
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.13.0",
-        "Node name for S&R": "SaveAudioMP3"
-      },
-      "widgets_values": [
-        "audio/ComfyUI",
-        "V0"
-      ],
-      "color": "#000000",
-      "bgcolor": "#000000"
-    },
     {
       "id": 13,
       "type": "SoulXSingerAdvanced",
@@ -131,6 +40,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "Comfyui-SoulX-Singer",
+        "ver": "8a8e8e4fd496ff72e79170b4a4a5c35a1352f28e",
         "Node name for S&R": "SoulXSingerAdvanced"
       },
       "widgets_values": [
@@ -197,12 +108,14 @@
           "name": "model",
           "type": "SOULX_MODEL",
           "links": [
-            1,
-            11
+            11,
+            17
           ]
         }
       ],
       "properties": {
+        "cnr_id": "Comfyui-SoulX-Singer",
+        "ver": "8a8e8e4fd496ff72e79170b4a4a5c35a1352f28e",
         "Node name for S&R": "SoulXSingerModelLoader"
       },
       "widgets_values": [
@@ -238,6 +151,40 @@
       "bgcolor": "rgba(24,24,27,.9)"
     },
     {
+      "id": 7,
+      "type": "SaveAudioMP3",
+      "pos": [
+        3381.5899354897447,
+        519.3309357403483
+      ],
+      "size": [
+        270,
+        136
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 20
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.13.0",
+        "Node name for S&R": "SaveAudioMP3"
+      },
+      "widgets_values": [
+        "audio/ComfyUI",
+        "V0"
+      ],
+      "color": "#000000",
+      "bgcolor": "#000000"
+    },
+    {
       "id": 8,
       "type": "LoadAudio",
       "pos": [
@@ -257,8 +204,8 @@
           "name": "AUDIO",
           "type": "AUDIO",
           "links": [
-            6,
-            12
+            12,
+            21
           ]
         }
       ],
@@ -296,7 +243,7 @@
           "name": "AUDIO",
           "type": "AUDIO",
           "links": [
-            7
+            22
           ]
         }
       ],
@@ -313,41 +260,67 @@
       ],
       "color": "#008181",
       "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 19,
+      "type": "SoulXSingerSimple",
+      "pos": [
+        3057.042885010499,
+        487.48963771451275
+      ],
+      "size": [
+        289.349609375,
+        314
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "SOULX_MODEL",
+          "link": 17
+        },
+        {
+          "name": "prompt_audio",
+          "type": "AUDIO",
+          "link": 21
+        },
+        {
+          "name": "target_audio",
+          "type": "AUDIO",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "Comfyui-SoulX-Singer",
+        "ver": "8a8e8e4fd496ff72e79170b4a4a5c35a1352f28e",
+        "Node name for S&R": "SoulXSingerSimple"
+      },
+      "widgets_values": [
+        "Mandarin",
+        "Mandarin",
+        "melody",
+        true,
+        true,
+        true,
+        true,
+        0,
+        32,
+        3
+      ]
     }
   ],
   "links": [
-    [
-      1,
-      2,
-      0,
-      1,
-      0,
-      "SOULX_MODEL"
-    ],
-    [
-      5,
-      1,
-      0,
-      7,
-      0,
-      "AUDIO"
-    ],
-    [
-      6,
-      8,
-      0,
-      1,
-      1,
-      "AUDIO"
-    ],
-    [
-      7,
-      9,
-      0,
-      1,
-      2,
-      "AUDIO"
-    ],
     [
       11,
       2,
@@ -370,6 +343,38 @@
       0,
       14,
       0,
+      "AUDIO"
+    ],
+    [
+      17,
+      2,
+      0,
+      19,
+      0,
+      "SOULX_MODEL"
+    ],
+    [
+      20,
+      19,
+      0,
+      7,
+      0,
+      "AUDIO"
+    ],
+    [
+      21,
+      8,
+      0,
+      19,
+      1,
+      "AUDIO"
+    ],
+    [
+      22,
+      9,
+      0,
+      19,
+      2,
       "AUDIO"
     ]
   ],
@@ -404,10 +409,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.015255979947837,
+      "scale": 0.9090909090909091,
       "offset": [
-        -2592.0162643967014,
-        -39.260462469142254
+        -2276.58301714732,
+        44.67208364518826
       ]
     },
     "workflowRendererVersion": "LG",
