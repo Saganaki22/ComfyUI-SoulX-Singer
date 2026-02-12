@@ -14,7 +14,7 @@ os.environ['NEMO_LOG_LEVEL'] = 'ERROR'
 os.environ['TRANSFORMERS_VERBOSITY'] = 'error'
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
-__version__ = "0.6.1"
+__version__ = "0.7.0"
 __author__ = "Saganaki22"
 
 import logging
