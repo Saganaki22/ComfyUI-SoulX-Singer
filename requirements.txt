@@ -1,6 +1,7 @@
 # Core dependencies for SoulX-Singer ComfyUI nodes
 torch>=2.0.0
 soundfile>=0.12.0
+scipy>=1.10.0
 librosa>=0.10.0
 numpy<2.0.0
 omegaconf>=2.3.0

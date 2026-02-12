@@ -1,7 +1,6 @@
 import json
 import torch
 import numpy as np
-import torchaudio
 from typing import List
 
 from soulxsinger.utils.audio_utils import load_wav

@@ -3,7 +3,7 @@ import math
 import numpy as np
 import torch
 import torch.nn.functional as F
-from torchaudio.transforms import Resample
+from scipy import signal
 import pyworld as pw
 
 from ....utils.audio.pitch_utils import interp_f0, resample_align_curve
@@ -62,11 +62,11 @@ class RMVPE:
         if sample_rate == 16000:
             audio_res = audio
         else:
-            key_str = str(sample_rate)
-            if key_str not in self.resample_kernel:
-                self.resample_kernel[key_str] = Resample(sample_rate, 16000, lowpass_filter_width=128)
-            self.resample_kernel[key_str] = self.resample_kernel[key_str].to(self.device)
-            audio_res = self.resample_kernel[key_str](audio)
+            # Resample using scipy instead of torchaudio
+            num_samples = int(audio.shape[-1] * 16000 / sample_rate)
+            audio_np = audio.cpu().numpy()
+            resampled = signal.resample(audio_np, num_samples, axis=-1)
+            audio_res = torch.from_numpy(resampled.astype(np.float32)).to(self.device)
         mel = self.mel_extractor(audio_res, center=True)
         hidden = self.mel2hidden(mel)
         f0 = self.decode(hidden, thred=thred, use_viterbi=use_viterbi).squeeze(0)
@@ -98,11 +98,11 @@ class RMVPE:
         if sample_rate == 16000:
             audios_res = audios
         else:
-            key_str = str(sample_rate)
-            if key_str not in self.resample_kernel:
-                self.resample_kernel[key_str] = Resample(sample_rate, 16000, lowpass_filter_width=128)
-            self.resample_kernel[key_str] = self.resample_kernel[key_str].to(self.device)
-            audios_res = self.resample_kernel[key_str](audios)
+            # Resample using scipy instead of torchaudio
+            num_samples = int(audios.shape[-1] * 16000 / sample_rate)
+            audios_np = audios.cpu().numpy()
+            resampled = signal.resample(audios_np, num_samples, axis=-1)
+            audios_res = torch.from_numpy(resampled.astype(np.float32)).to(self.device)
         mels = self.mel_extractor(audios_res, center=True)
         hiddens = self.mel2hidden(mels)
         f0 = self.decode(hiddens, thred=thred, use_viterbi=use_viterbi)

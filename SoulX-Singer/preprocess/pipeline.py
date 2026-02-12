@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import soundfile as sf
 from pathlib import Path
@@ -24,18 +25,53 @@ class PreprocessPipeline:
         self.max_merge_duration = max_merge_duration
 
         # Get absolute path to preprocessing models
-        # Models are now at: ComfyUI/models/SoulX-Singer/preprocessors/
-        # This file is at: custom_nodes/ComfyUI-SoulX-Singer/SoulX-Singer/preprocess/pipeline.py
-        # Navigate up to custom_nodes, then to models
-        custom_nodes_dir = Path(__file__).parent.parent.parent.parent
-        comfyui_dir = custom_nodes_dir.parent
-        base_dir = comfyui_dir / "models" / "SoulX-Singer" / "preprocessors"
+        # Try multiple possible locations for better compatibility
         
-        if not base_dir.exists():
+        # Method 1: Try using folder_paths (ComfyUI integration)
+        base_dir = None
+        try:
+            import folder_paths
+            models_base = Path(folder_paths.models_dir) / "SoulX-Singer" / "preprocessors"
+            if models_base.exists():
+                base_dir = models_base
+        except Exception:
+            pass
+        
+        # Method 2: Navigate from this file's location
+        # This file is at: custom_nodes/ComfyUI-SoulX-Singer/SoulX-Singer/preprocess/pipeline.py
+        if base_dir is None:
+            custom_nodes_dir = Path(__file__).parent.parent.parent.parent
+            comfyui_dir = custom_nodes_dir.parent
+            fallback_dir = comfyui_dir / "models" / "SoulX-Singer" / "preprocessors"
+            if fallback_dir.exists():
+                base_dir = fallback_dir
+        
+        # Method 3: Check if symlink or environment variable exists
+        if base_dir is None:
+            env_path = os.environ.get('SOULX_PREPROCESS_MODELS')
+            if env_path and Path(env_path).exists():
+                base_dir = Path(env_path)
+        
+        # Method 4: Check current working directory relative path
+        if base_dir is None:
+            cwd_relative = Path.cwd() / "models" / "SoulX-Singer" / "preprocessors"
+            if cwd_relative.exists():
+                base_dir = cwd_relative
+        
+        if base_dir is None or not base_dir.exists():
             raise FileNotFoundError(
-                f"Preprocessing models not found at {base_dir}\\n"
-                f"Please ensure preprocessing models are downloaded."
+                f"Preprocessing models not found!\n"
+                f"Searched locations:\n"
+                f"  1. ComfyUI/models/SoulX-Singer/preprocessors/\n"
+                f"  2. Environment variable: SOULX_PREPROCESS_MODELS\n"
+                f"  3. Current working directory: {Path.cwd() / 'models' / 'SoulX-Singer' / 'preprocessors'}\n"
+                f"\n"
+                f"Please ensure preprocessing models are downloaded to one of these locations.\n"
+                f"Or set SOULX_PREPROCESS_MODELS environment variable to the correct path."
             )
+        
+        # Resolve symlinks to actual path
+        base_dir = base_dir.resolve()
         
         if vocal_sep:
             self.vocal_separator = VocalSeparator(

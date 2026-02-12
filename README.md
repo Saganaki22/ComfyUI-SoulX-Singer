@@ -37,6 +37,7 @@ This ComfyUI wrapper provides native node-based integration with support for **m
   - Optional fp32 model for maximum quality (~10GB total)
 - **💾 Smart Caching** – Optional model caching with dtype/attention change detection
 - **🎹 MIDI Editor Support** – Advanced node for manual metadata editing workflow
+- **🔧 Improved Compatibility** – Uses soundfile + scipy instead of torchaudio for better cross-platform support
 
 ---
 
@@ -255,8 +256,11 @@ Simple synthesizer with auto-preprocessing.
 - `prompt_language`: Mandarin/English/Cantonese
 - `target_language`: Mandarin/English/Cantonese
 - `control_mode`: `melody` (F0 contour) or `score` (MIDI notes)
-- `vocal_sep_prompt`: Apply vocal separation to prompt
-- `vocal_sep_target`: Apply vocal separation to target
+- `enable_preprocessing`: ⚠️ **EXPERIMENTAL** - Enable full preprocessing (default: `True`)
+  - **True**: Full pipeline with vocal separation + F0 + transcription (for mixed audio)
+  - **False**: Skip vocal separation, only F0 + transcription (for clean acapellas)
+- `vocal_sep_prompt`: Apply vocal separation to prompt (ignored if preprocessing disabled)
+- `vocal_sep_target`: Apply vocal separation to target (ignored if preprocessing disabled)
 - `auto_pitch_shift`: Auto-match pitch ranges
 - `pitch_shift`: Manual pitch shift (-12 to +12 semitones)
 - `n_steps`: Diffusion steps (16-64, default 32)
@@ -265,7 +269,9 @@ Simple synthesizer with auto-preprocessing.
 **Outputs:**
 - `audio`: Generated singing voice (AUDIO)
 
-**Note:** First run will download preprocessing models to `ComfyUI/models/SoulX-Singer/preprocessors/` if not already present.
+**Notes:** 
+- First run will download preprocessing models to `ComfyUI/models/SoulX-Singer/preprocessors/` if not already present
+- ⚠️ **EXPERIMENTAL**: Disabling preprocessing skips vocal separation but still extracts F0 and transcribes lyrics - use only with clean acapella vocals
 
 ---
 

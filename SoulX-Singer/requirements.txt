@@ -30,7 +30,6 @@ scikit_image==0.25.2
 soundfile==0.13.1
 ToJyutping==3.2.0
 torch==2.2.0
-torchaudio==2.2.0
 torchcodec==0.10.0
 tqdm==4.67.1
 transformers==4.41.2

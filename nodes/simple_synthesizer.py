@@ -76,18 +76,21 @@ def download_preprocessing_models():
     logger.info("PREPROCESSING MODELS NOT FOUND")
     logger.info("=" * 60)
     logger.info("Downloading ~5GB of preprocessing models from HuggingFace...")
-    logger.info("Repository: Soul-AILab/SoulX-Singer-Preprocess")
+    logger.info("Repository: drbaph/SoulX-Singer")
     logger.info("This is a one-time download.")
     logger.info("=" * 60)
     
     try:
         from huggingface_hub import snapshot_download
         
-        # Download all preprocessing models
+        # Download preprocessing models from main repo
+        # They are included in the drbaph/SoulX-Singer repo under preprocessors/
         snapshot_download(
-            repo_id="Soul-AILab/SoulX-Singer-Preprocess",
-            local_dir=str(PREPROCESS_MODELS_DIR),
+            repo_id="drbaph/SoulX-Singer",
+            local_dir=str(MODELS_DIR),
             local_dir_use_symlinks=False,
+            allow_patterns=["preprocessors/**"],
+            resume_download=True,
         )
         
         logger.info("=" * 60)
@@ -103,9 +106,9 @@ def download_preprocessing_models():
         logger.error(f"Error: {e}")
         logger.error("")
         logger.error("Please manually download from:")
-        logger.error("https://huggingface.co/Soul-AILab/SoulX-Singer-Preprocess")
+        logger.error("https://huggingface.co/drbaph/SoulX-Singer")
         logger.error("")
-        logger.error("Extract to:")
+        logger.error("Download the 'preprocessors' folder and place it in:")
         logger.error(f"{PREPROCESS_MODELS_DIR}")
         logger.error("=" * 60)
         return False
@@ -122,7 +125,7 @@ def get_preprocess_pipeline(device: str = "cuda"):
         if not download_preprocessing_models():
             raise RuntimeError(
                 "Preprocessing models not available. "
-                "Please download manually from HuggingFace: Soul-AILab/SoulX-Singer-Preprocess"
+                "Please download manually from HuggingFace: drbaph/SoulX-Singer (preprocessors folder)"
             )
         
         try:
@@ -237,13 +240,17 @@ class SoulXSingerSimple:
                     "default": "melody",
                     "tooltip": "melody: F0 contour control, score: MIDI note control",
                 }),
+                "enable_preprocessing": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "⚠️ EXPERIMENTAL: Enable full preprocessing (vocal sep + F0 + transcription). Disable for clean acapellas to skip vocal separation.",
+                }),
                 "vocal_sep_prompt": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "Apply vocal separation to prompt audio",
+                    "tooltip": "Apply vocal separation to prompt audio (ignored if preprocessing disabled)",
                 }),
                 "vocal_sep_target": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "Apply vocal separation to target audio",
+                    "tooltip": "Apply vocal separation to target audio (ignored if preprocessing disabled)",
                 }),
                 "auto_pitch_shift": ("BOOLEAN", {
                     "default": True,
@@ -295,6 +302,7 @@ class SoulXSingerSimple:
         prompt_language: str,
         target_language: str,
         control_mode: str,
+        enable_preprocessing: bool,
         vocal_sep_prompt: bool,
         vocal_sep_target: bool,
         auto_pitch_shift: bool,
@@ -302,7 +310,7 @@ class SoulXSingerSimple:
         n_steps: int,
         cfg_scale: float,
     ) -> Tuple[Dict[str, Any]]:
-        """Synthesize singing voice with auto-preprocessing.
+        """Synthesize singing voice with optional auto-preprocessing.
         
         Args:
             model: Model dict from loader
@@ -311,6 +319,7 @@ class SoulXSingerSimple:
             prompt_language: Language of prompt
             target_language: Language of target
             control_mode: melody or score
+            enable_preprocessing: Enable full preprocessing (vocal sep, F0, transcription)
             vocal_sep_prompt: Apply vocal separation to prompt
             vocal_sep_target: Apply vocal separation to target
             auto_pitch_shift: Auto-match pitch ranges
@@ -329,12 +338,17 @@ class SoulXSingerSimple:
             
             logger.info("=" * 60)
             logger.info("SoulX-Singer Simple Synthesis")
+            if enable_preprocessing:
+                logger.info("Preprocessing: ENABLED (full pipeline with vocal separation)")
+            else:
+                logger.info("Preprocessing: PARTIAL (F0 + transcription only, no vocal separation)")
+                logger.info("⚠️  Audio should be clean acapellas (vocals only)")
             logger.info("=" * 60)
             
             self._check_interrupt()
             
             # Stage 1: Save audio to temp files
-            logger.info("Stage 1/4: Preparing audio files...")
+            logger.info(f"Stage 1/{total_steps}: Preparing audio files...")
             prompt_path = self.temp_dir / "prompt.wav"
             target_path = self.temp_dir / "target.wav"
             
@@ -346,20 +360,31 @@ class SoulXSingerSimple:
             
             self._check_interrupt()
             
-            # Stage 2: Preprocess prompt
-            logger.info("Stage 2/4: Preprocessing prompt audio...")
             device = model["device"]
+            
+            # Always run preprocessing pipeline, but control vocal separation
+            # Stage 2: Preprocess prompt
+            logger.info(f"Stage 2/{total_steps}: Preprocessing prompt audio...")
             pipeline = get_preprocess_pipeline(device)
+            
+            # When preprocessing disabled, force vocal_sep to False (use clean audio as-is)
+            # But still do F0 extraction and transcription
+            actual_vocal_sep_prompt = vocal_sep_prompt if enable_preprocessing else False
+            actual_vocal_sep_target = vocal_sep_target if enable_preprocessing else False
+            
+            if not enable_preprocessing:
+                logger.info("⚠️  Preprocessing disabled: Skipping vocal separation")
+                logger.info("⚠️  Using clean acapella audio directly for F0 and transcription")
             
             # Update pipeline settings
             pipeline.language = prompt_language
-            pipeline.vocal_sep = vocal_sep_prompt
+            pipeline.vocal_sep = actual_vocal_sep_prompt
             pipeline.save_dir = str(self.temp_dir / "prompt_metadata")
             
             # Run preprocessing
             pipeline.run(
                 audio_path=str(prompt_path),
-                vocal_sep=vocal_sep_prompt,
+                vocal_sep=actual_vocal_sep_prompt,
                 max_merge_duration=20000,
                 language=prompt_language,
             )
@@ -380,14 +405,14 @@ class SoulXSingerSimple:
             self._check_interrupt()
             
             # Stage 3: Preprocess target
-            logger.info("Stage 3/4: Preprocessing target audio...")
+            logger.info(f"Stage 3/{total_steps}: Preprocessing target audio...")
             pipeline.language = target_language
-            pipeline.vocal_sep = vocal_sep_target
+            pipeline.vocal_sep = actual_vocal_sep_target
             pipeline.save_dir = str(self.temp_dir / "target_metadata")
             
             pipeline.run(
                 audio_path=str(target_path),
-                vocal_sep=vocal_sep_target,
+                vocal_sep=actual_vocal_sep_target,
                 max_merge_duration=60000,
                 language=target_language,
             )

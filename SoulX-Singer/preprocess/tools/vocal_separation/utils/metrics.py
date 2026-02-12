@@ -313,8 +313,6 @@ def bleed_full(
         - `fullness` (float): A score indicating how 'full' the estimated signal is (higher is better).
     """
 
-    from torchaudio.transforms import AmplitudeToDB
-
     reference = torch.from_numpy(reference).float().to(device)
     estimate = torch.from_numpy(estimate).float().to(device)
 
@@ -332,8 +330,11 @@ def bleed_full(
     S1_mel = torch.matmul(mel_filter_bank, D1)
     S2_mel = torch.matmul(mel_filter_bank, D2)
 
-    S1_db = AmplitudeToDB(stype="magnitude", top_db=80)(S1_mel)
-    S2_db = AmplitudeToDB(stype="magnitude", top_db=80)(S2_mel)
+    # Convert amplitude to dB (manual implementation instead of torchaudio)
+    S1_db = 20 * torch.log10(torch.clamp(S1_mel, min=1e-10))
+    S1_db = torch.clamp(S1_db, min=S1_db.max() - 80)
+    S2_db = 20 * torch.log10(torch.clamp(S2_mel, min=1e-10))
+    S2_db = torch.clamp(S2_db, min=S2_db.max() - 80)
 
     diff = S2_db - S1_db
 
