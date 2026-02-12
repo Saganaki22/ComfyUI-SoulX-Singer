@@ -1,0 +1,421 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "revision": 0,
+  "last_node_id": 16,
+  "last_link_id": 13,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "SoulXSingerSimple",
+      "pos": [
+        3040.242836182374,
+        506.689649921544
+      ],
+      "size": [
+        270,
+        290
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "SOULX_MODEL",
+          "link": 1
+        },
+        {
+          "name": "prompt_audio",
+          "type": "AUDIO",
+          "link": 6
+        },
+        {
+          "name": "target_audio",
+          "type": "AUDIO",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SoulXSingerSimple"
+      },
+      "widgets_values": [
+        "English",
+        "English",
+        "melody",
+        true,
+        true,
+        true,
+        0,
+        32,
+        3
+      ],
+      "color": "#42794b",
+      "bgcolor": "#42794b"
+    },
+    {
+      "id": 7,
+      "type": "SaveAudioMP3",
+      "pos": [
+        3381.5899354897447,
+        519.3309357403483
+      ],
+      "size": [
+        270,
+        136
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 5
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.13.0",
+        "Node name for S&R": "SaveAudioMP3"
+      },
+      "widgets_values": [
+        "audio/ComfyUI",
+        "V0"
+      ],
+      "color": "#000000",
+      "bgcolor": "#000000"
+    },
+    {
+      "id": 13,
+      "type": "SoulXSingerAdvanced",
+      "pos": [
+        3037.5420072963952,
+        182.88340326963763
+      ],
+      "size": [
+        285.2456364814675,
+        222
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "SOULX_MODEL",
+          "link": 11
+        },
+        {
+          "name": "prompt_audio",
+          "type": "AUDIO",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SoulXSingerAdvanced"
+      },
+      "widgets_values": [
+        "",
+        "",
+        "score",
+        true,
+        0,
+        32,
+        3
+      ]
+    },
+    {
+      "id": 14,
+      "type": "SaveAudioMP3",
+      "pos": [
+        3393.450096602946,
+        192.44730084247144
+      ],
+      "size": [
+        270,
+        136
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 13
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.13.0",
+        "Node name for S&R": "SaveAudioMP3"
+      },
+      "widgets_values": [
+        "audio/ComfyUI",
+        "V0"
+      ],
+      "color": "#000000",
+      "bgcolor": "#000000"
+    },
+    {
+      "id": 2,
+      "type": "SoulXSingerModelLoader",
+      "pos": [
+        2692.0162643967014,
+        256.95301701784507
+      ],
+      "size": [
+        303.65381269247143,
+        130
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "SOULX_MODEL",
+          "links": [
+            1,
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SoulXSingerModelLoader"
+      },
+      "widgets_values": [
+        "SoulX-Singer_model_bf16",
+        "bf16",
+        "sdpa",
+        true
+      ],
+      "color": "#424279",
+      "bgcolor": "#424279"
+    },
+    {
+      "id": 16,
+      "type": "MarkdownNote",
+      "pos": [
+        3693.0694305584425,
+        139.26046246914225
+      ],
+      "size": [
+        435.4919802741906,
+        667.9970832501394
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# 🎤 SoulX-Singer Installation\n\n## 📥 Auto-Download\n\n**Models auto-download on first run** - no manual setup needed!\n\n- bf16 model + preprocessors (~6.5GB)\n- Optional fp32 model (~2.9GB additional)\n\n---\n\n## 📁 Manual Download\n\n| File | Size | Link |\n|------|------|------|\n| bf16 Model | ~1.5GB | [Download](https://huggingface.co/drbaph/SoulX-Singer/resolve/main/SoulX-Singer_model_bf16.safetensors?download=true) |\n| fp32 Model | ~2.9GB | [Download](https://huggingface.co/drbaph/SoulX-Singer/resolve/main/SoulX-Singer_model_fp32.safetensors?download=true) |\n| Preprocessors | ~5GB | [Download](https://huggingface.co/drbaph/SoulX-Singer/tree/main/preprocessors) |\n\nPlace in:\n```\nComfyUI/models/SoulX-Singer/\n├── SoulX-Singer_model_bf16.safetensors\n├── SoulX-Singer_model_fp32.safetensors  [optional]\n├── config.yaml\n└── preprocessors/\n```\n\n---\n\n## 🎹 Advanced Node Metadata\n\n**Metadata JSON files are auto-generated** when using Simple Node:\n\n1. Run Simple Node - metadata saves to temp folder\n2. Check console for path: `[temp]/soulx_singer/.../metadata.json`\n3. Copy prompt & target metadata to your workflow\n4. Use with Advanced Node\n\nEdit metadata with [MIDI Editor](https://huggingface.co/spaces/Soul-AILab/SoulX-Singer-Midi-Editor)\n\n---\n\n## 🔗 Links\n- 🤗 [Models](https://huggingface.co/drbaph/SoulX-Singer)\n- 🎹 [MIDI Editor](https://huggingface.co/spaces/Soul-AILab/SoulX-Singer-Midi-Editor)\n- 📄 [Paper](https://arxiv.org/abs/2602.07803)\n- 🐛 [Issues/Bugs](https://github.com/Saganaki22/ComfyUI-SoulX-Singer/issues)\n"
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 8,
+      "type": "LoadAudio",
+      "pos": [
+        2701.8637544442677,
+        456.5237074342475
+      ],
+      "size": [
+        282.798828125,
+        136
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            6,
+            12
+          ]
+        }
+      ],
+      "title": "Voice to be cloned",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.13.0",
+        "Node name for S&R": "LoadAudio"
+      },
+      "widgets_values": [
+        "0000_00015_1_chf3_iris2.mp3",
+        null,
+        null
+      ],
+      "color": "#1f1f48",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 9,
+      "type": "LoadAudio",
+      "pos": [
+        2708.37592172986,
+        657.5884614049155
+      ],
+      "size": [
+        282.798828125,
+        136
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "Target Speech",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.13.0",
+        "Node name for S&R": "LoadAudio"
+      },
+      "widgets_values": [
+        "0000_00015_1_chf3_iris2.mp3",
+        null,
+        null
+      ],
+      "color": "#008181",
+      "bgcolor": "rgba(24,24,27,.9)"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      1,
+      0,
+      "SOULX_MODEL"
+    ],
+    [
+      5,
+      1,
+      0,
+      7,
+      0,
+      "AUDIO"
+    ],
+    [
+      6,
+      8,
+      0,
+      1,
+      1,
+      "AUDIO"
+    ],
+    [
+      7,
+      9,
+      0,
+      1,
+      2,
+      "AUDIO"
+    ],
+    [
+      11,
+      2,
+      0,
+      13,
+      0,
+      "SOULX_MODEL"
+    ],
+    [
+      12,
+      8,
+      0,
+      13,
+      1,
+      "AUDIO"
+    ],
+    [
+      13,
+      13,
+      0,
+      14,
+      0,
+      "AUDIO"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "🎙️ SoulX-Singer Simple",
+      "bounding": [
+        3030.242836182374,
+        433.089649921544,
+        643.883144574032,
+        373.6000000000001
+      ],
+      "color": "#8A8",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "🎙️ SoulX-Singer Advanced",
+      "bounding": [
+        3027.5420072963952,
+        109.28340326963763,
+        645.9080893065507,
+        305.6
+      ],
+      "color": "#a1309b",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.015255979947837,
+      "offset": [
+        -2592.0162643967014,
+        -39.260462469142254
+      ]
+    },
+    "workflowRendererVersion": "LG",
+    "frontendVersion": "1.38.13",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

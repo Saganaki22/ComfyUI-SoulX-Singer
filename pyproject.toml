@@ -11,13 +11,11 @@ dependencies = ["torch", "soundfile", "librosa", "numpy", "omegaconf", "huggingf
 
 
 [project.urls]
-Repository = "https://github.com/Soul-AILab/SoulX-Singer"
-Documentation = "https://github.com/Soul-AILab/ComfyUI-SoulX-Singer#readme"
-Homepage = "https://soul-ailab.github.io/soulx-singer/"
-Model = "https://huggingface.co/drbaph/SoulX-Singer"
+Repository = "https://github.com/Saganaki22/ComfyUI-SoulX-Singer"
+
 
 [tool.comfy]
-PublisherId = "Saganaki22"
+PublisherId = "saganaki22"
 DisplayName = "SoulX-Singer"
 Icon = "https://avatars.githubusercontent.com/u/84208527"
 
