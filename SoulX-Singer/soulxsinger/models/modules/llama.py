@@ -62,42 +62,27 @@ class LlamaNARDecoderLayer(LlamaDecoderLayer):
         hidden_states: torch.Tensor,
         cond_embedding: torch.Tensor,
         attention_mask: Optional[torch.Tensor] = None,
-        position_ids: Optional[torch.LongTensor] = None,
+        position_embeddings: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
         past_key_value: Optional[Tuple[torch.Tensor]] = None,
         output_attentions: Optional[bool] = False,
         use_cache: Optional[bool] = False,
     ) -> Tuple[
         torch.FloatTensor, Optional[Tuple[torch.FloatTensor, torch.FloatTensor]]
     ]:
-        """
-        Args:
-            hidden_states (`torch.FloatTensor`): input to the layer of shape `(batch, seq_len, embed_dim)`
-            attention_mask (`torch.FloatTensor`, *optional*): attention mask of size
-                `(batch, 1, tgt_len, src_len)` where padding elements are indicated by very large negative values.
-            output_attentions (`bool`, *optional*):
-                Whether or not to return the attentions tensors of all attention layers. See `attentions` under
-                returned tensors for more detail.
-            use_cache (`bool`, *optional*):
-                If set to `True`, `past_key_values` key value states are returned and can be used to speed up decoding
-                (see `past_key_values`).
-            past_key_value (`Tuple(torch.FloatTensor)`, *optional*): cached past key and value projection states
-        """
-
         residual = hidden_states
 
         hidden_states = self.input_layernorm(
             hidden_states, cond_embedding=cond_embedding
         )
 
-        # Self Attention
-        hidden_states, self_attn_weights, present_key_value = self.self_attn(
+        # Self Attention (transformers >= 4.46 returns 2 values, not 3)
+        attn_outputs = self.self_attn(
             hidden_states=hidden_states,
             attention_mask=attention_mask,
-            position_ids=position_ids,
-            past_key_value=past_key_value,
-            output_attentions=output_attentions,
-            use_cache=use_cache,
+            position_embeddings=position_embeddings,
         )
+        hidden_states = attn_outputs[0]
+        self_attn_weights = attn_outputs[1] if len(attn_outputs) > 1 else None
         hidden_states = residual + hidden_states
 
         # Fully Connected
@@ -113,9 +98,6 @@ class LlamaNARDecoderLayer(LlamaDecoderLayer):
         if output_attentions:
             outputs += (self_attn_weights,)
 
-        if use_cache:
-            outputs += (present_key_value,)
-
         return outputs
 
 
@@ -129,21 +111,26 @@ class DiffLlama(LlamaModel):
         dropout=0.1,
         ffn_dropout=0.1,
         attention_dropout=0.0,
-        config=LlamaConfig(0, 256, 1024, 1, 1),
+        config=None,
     ):
+        # Build a config that matches the actual layer dimensions so that
+        # rotary_emb (created by the parent LlamaModel) uses the correct head_dim.
+        if config is None:
+            config = LlamaConfig(
+                vocab_size=0,
+                hidden_size=hidden_size,
+                intermediate_size=hidden_size * 4,
+                num_hidden_layers=num_layers,
+                num_attention_heads=num_heads,
+                max_position_embeddings=4096,
+                attn_implementation="sdpa",
+            )
         super().__init__(config)
 
+        # Reuse the same config for layers so attn_implementation is consistent
         self.layers = nn.ModuleList(
             [
-                LlamaNARDecoderLayer(
-                    LlamaConfig(
-                        hidden_size=hidden_size,
-                        num_attention_heads=num_heads,
-                        max_position_embeddings=4096,
-                        intermediate_size=hidden_size * 4,
-                    ),
-                    layer_idx=i,
-                )
+                LlamaNARDecoderLayer(config, layer_idx=i)
                 for i in range(num_layers)
             ]
         )
@@ -313,10 +300,12 @@ class DiffLlama(LlamaModel):
             if use_cache:
                 use_cache = False
 
+        # Compute rotary position embeddings
+        position_embeddings = self.rotary_emb(hidden_states, position_ids)
+
         # decoder layers
         all_hidden_states = () if output_hidden_states else None
         all_self_attns = () if output_attentions else None
-        next_decoder_cache = () if use_cache else None
 
         all_layer_hidden_states = []
 
@@ -324,43 +313,16 @@ class DiffLlama(LlamaModel):
             if output_hidden_states:
                 all_hidden_states += (hidden_states,)
 
-            past_key_value = (
-                past_key_values[idx] if past_key_values is not None else None
+            layer_outputs = decoder_layer(
+                hidden_states,
+                attention_mask=attention_mask,
+                position_embeddings=position_embeddings,
+                output_attentions=output_attentions,
+                cond_embedding=diffusion_step,
             )
-
-            if self.gradient_checkpointing and self.training:
-                raise NotImplementedError
-
-                def create_custom_forward(module):
-                    def custom_forward(*inputs):
-                        # None for past_key_value
-                        return module(*inputs, output_attentions, None)
-
-                    return custom_forward
-
-                layer_outputs = torch.utils.checkpoint.checkpoint(
-                    create_custom_forward(decoder_layer),
-                    hidden_states,
-                    attention_mask,
-                    position_ids,
-                    None,
-                )
-            else:
-                layer_outputs = decoder_layer(
-                    hidden_states,
-                    attention_mask=attention_mask,
-                    position_ids=position_ids,
-                    past_key_value=past_key_value,
-                    output_attentions=output_attentions,
-                    use_cache=use_cache,
-                    cond_embedding=diffusion_step,
-                )
 
             hidden_states = layer_outputs[0]
             all_layer_hidden_states.append(hidden_states.clone())
-
-            if use_cache:
-                next_decoder_cache += (layer_outputs[2 if output_attentions else 1],)
 
             if output_attentions:
                 all_self_attns += (layer_outputs[1],)
@@ -370,8 +332,6 @@ class DiffLlama(LlamaModel):
         # add hidden states from the last decoder layer
         if output_hidden_states:
             all_hidden_states += (hidden_states,)
-
-        next_cache = next_decoder_cache if use_cache else None
 
         hidden_states = self.mel_out_mlp(hidden_states)
 
