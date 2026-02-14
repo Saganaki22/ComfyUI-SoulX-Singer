@@ -337,8 +337,8 @@ class SoulXSingerModelLoader:
             logger.info(f"Loading model: {model_path}")
             logger.info(f"Device: {device}, Dtype: {dtype}")
             
-            # Initialize model with attention type
-            model = SoulXSinger(config, attention_type=attention_type)
+            # Initialize model
+            model = SoulXSinger(config)
             
             # Load weights
             if model_path.suffix == '.safetensors':

@@ -40,7 +40,8 @@ $RECYCLE.BIN/
 *.ckpt
 *.safetensors
 *.bin
-models/
+/models/
+!SoulX-Singer/soulxsinger/models/
 preprocessors/
 
 # Logs
