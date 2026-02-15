@@ -17,7 +17,8 @@ from preprocess.tools import (
 
 
 class PreprocessPipeline:
-    def __init__(self, device: str, language: str, save_dir: str, vocal_sep: bool = True, max_merge_duration: int = 60000):
+    def __init__(self, device: str, language: str, save_dir: str, vocal_sep: bool = True, max_merge_duration: int = 60000,
+                 f0_half_precision: bool = False, torch_compile: bool = False):
         self.device = device
         self.language = language
         self.save_dir = save_dir
@@ -86,7 +87,15 @@ class PreprocessPipeline:
         self.f0_extractor = F0Extractor(
             model_path=str(base_dir / "rmvpe" / "rmvpe.pt"),
             device=device,
+            is_half=f0_half_precision,
         )
+        if torch_compile:
+            import torch
+            try:
+                self.f0_extractor.model.model = torch.compile(self.f0_extractor.model.model)
+                print("[preprocess] torch.compile applied to RMVPE model")
+            except Exception as e:
+                print(f"[preprocess] torch.compile failed (falling back to eager): {e}")
         self.vocal_detector = VocalDetector(
             cut_wavs_output_dir=  f"{save_dir}/cut_wavs",
         )

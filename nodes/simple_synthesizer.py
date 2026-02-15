@@ -114,35 +114,50 @@ def download_preprocessing_models():
         return False
 
 
-def get_preprocess_pipeline(device: str = "cuda"):
-    """Lazy load preprocessing pipeline on first use."""
-    global _preprocess_pipeline
-    
+_preprocess_pipeline_config = None
+
+def get_preprocess_pipeline(device: str = "cuda", f0_half_precision: bool = False, torch_compile: bool = False):
+    """Lazy load preprocessing pipeline on first use. Recreates if options change."""
+    global _preprocess_pipeline, _preprocess_pipeline_config
+
+    current_config = (device, f0_half_precision, torch_compile)
+
+    if _preprocess_pipeline is not None and _preprocess_pipeline_config != current_config:
+        logger.info("Preprocessing options changed, reinitializing pipeline...")
+        _preprocess_pipeline = None
+
     if _preprocess_pipeline is None:
-        logger.info("Initializing preprocessing pipeline (first time only)...")
-        
+        logger.info("Initializing preprocessing pipeline...")
+        if f0_half_precision:
+            logger.info("  F0 half precision: ENABLED")
+        if torch_compile:
+            logger.info("  torch.compile: ENABLED (first run will be slower)")
+
         # Download models if needed
         if not download_preprocessing_models():
             raise RuntimeError(
                 "Preprocessing models not available. "
                 "Please download manually from HuggingFace: drbaph/SoulX-Singer (preprocessors folder)"
             )
-        
+
         try:
             from preprocess.pipeline import PreprocessPipeline
-            
+
             _preprocess_pipeline = PreprocessPipeline(
                 device=device,
                 language="Mandarin",  # Will be overridden per call
                 save_dir=str(tempfile.gettempdir()),
                 vocal_sep=True,
                 max_merge_duration=60000,
+                f0_half_precision=f0_half_precision,
+                torch_compile=torch_compile,
             )
+            _preprocess_pipeline_config = current_config
             logger.info("Preprocessing pipeline loaded successfully!")
         except Exception as e:
             logger.error(f"Failed to load preprocessing pipeline: {e}")
             raise
-    
+
     return _preprocess_pipeline
 
 
@@ -277,6 +292,14 @@ class SoulXSingerSimple:
                     "step": 0.1,
                     "tooltip": "Classifier-free guidance scale (higher = follows prompt more strictly)",
                 }),
+                "f0_half_precision": ("BOOLEAN", {
+                    "default": False,
+                    "tooltip": "Run F0 pitch extraction in fp16 for ~1.5-2x speedup. May slightly reduce pitch accuracy.",
+                }),
+                "torch_compile": ("BOOLEAN", {
+                    "default": False,
+                    "tooltip": "Apply torch.compile to F0 model for ~1.3-2x speedup. First run is slower (compilation), subsequent runs are faster.",
+                }),
             },
         }
     
@@ -309,6 +332,8 @@ class SoulXSingerSimple:
         pitch_shift: int,
         n_steps: int,
         cfg_scale: float,
+        f0_half_precision: bool = False,
+        torch_compile: bool = False,
     ) -> Tuple[Dict[str, Any]]:
         """Synthesize singing voice with optional auto-preprocessing.
         
@@ -365,7 +390,7 @@ class SoulXSingerSimple:
             # Always run preprocessing pipeline, but control vocal separation
             # Stage 2: Preprocess prompt
             logger.info(f"Stage 2/{total_steps}: Preprocessing prompt audio...")
-            pipeline = get_preprocess_pipeline(device)
+            pipeline = get_preprocess_pipeline(device, f0_half_precision=f0_half_precision, torch_compile=torch_compile)
             
             # When preprocessing disabled, force vocal_sep to False (use clean audio as-is)
             # But still do F0 extraction and transcription
