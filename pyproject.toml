@@ -1,7 +1,7 @@
 [project]
 name = "Comfyui-SoulX-Singer"
 description = "ComfyUI custom nodes for SoulX-Singer - Zero-Shot Singing Voice Synthesis"
-version = "0.7.0"
+version = "0.7.1"
 license = {file = "LICENSE"}
 authors = [
     { name = "SoulX-Singer Team" }

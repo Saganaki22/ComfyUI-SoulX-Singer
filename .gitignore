@@ -40,7 +40,7 @@ $RECYCLE.BIN/
 *.ckpt
 *.safetensors
 *.bin
-models/
+/models/
 preprocessors/
 
 # Logs
