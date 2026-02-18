@@ -74,6 +74,11 @@ class PreprocessPipeline:
         base_dir = base_dir.resolve()
         
         if vocal_sep:
+            if VocalSeparator is None:
+                raise ImportError(
+                    "VocalSeparator could not be imported. Required dependencies for vocal separation are missing.\n"
+                    "This usually means torch or other core dependencies are not properly installed."
+                )
             self.vocal_separator = VocalSeparator(
                 sep_model_path=str(base_dir / "mel-band-roformer-karaoke" / "mel_band_roformer_karaoke_becruily.ckpt"),
                 sep_config_path=str(base_dir / "mel-band-roformer-karaoke" / "config_karaoke_becruily.yaml"),
@@ -90,11 +95,25 @@ class PreprocessPipeline:
         self.vocal_detector = VocalDetector(
             cut_wavs_output_dir=  f"{save_dir}/cut_wavs",
         )
+        if LyricTranscriber is None:
+            raise ImportError(
+                "LyricTranscriber could not be imported. This usually means required dependencies are missing.\n"
+                "Please ensure the following packages are installed:\n"
+                "  - funasr>=1.3.0 (for Chinese ASR)\n"
+                "  - nemo_toolkit[asr]>=2.6.0 (for English ASR)\n\n"
+                "Install them with:\n"
+                "  pip install funasr>=1.3.0 'nemo_toolkit[asr]>=2.6.0'\n\n"
+                "Note: nemo_toolkit requires Python 3.10-3.12 and may have issues with Python 3.13+"
+            )
         self.lyric_transcriber = LyricTranscriber(
             zh_model_path=str(base_dir / "speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch"),
             en_model_path=str(base_dir / "parakeet-tdt-0.6b-v2" / "parakeet-tdt-0.6b-v2.nemo"),
             device=device
         )
+        if NoteTranscriber is None:
+            raise ImportError(
+                "NoteTranscriber could not be imported. Required dependencies for note transcription are missing."
+            )
         self.note_transcriber = NoteTranscriber(
             rosvot_model_path=str(base_dir / "rosvot" / "rosvot" / "model.pt"), 
             rwbd_model_path=str(base_dir / "rosvot" / "rwbd" / "model.pt"), 

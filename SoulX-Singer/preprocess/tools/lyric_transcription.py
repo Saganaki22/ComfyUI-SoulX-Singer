@@ -285,8 +285,8 @@ class LyricTranscriber:
 
 if __name__ == "__main__":
     m = LyricTranscriber(
-        zh_model_path="pretrained_models/speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch",
-        en_model_path="pretrained_models/parakeet-tdt-0.6b-v2/parakeet-tdt-0.6b-v2.nemo",
+        zh_model_path="models/SoulX-Singer/preprocessors/speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch",
+        en_model_path="models/SoulX-Singer/preprocessors/parakeet-tdt-0.6b-v2/parakeet-tdt-0.6b-v2.nemo",
         device="cuda"
     )
     print(m.process("example/test/asr_zh.wav", language="Mandarin"))

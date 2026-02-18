@@ -513,8 +513,8 @@ if __name__ == "__main__":
     item = items[0]
 
     m = NoteTranscriber(
-        rosvot_model_path="pretrained_models/rosvot/rosvot/model.pt", 
-        rwbd_model_path="pretrained_models/rosvot/rwbd/model.pt", 
+        rosvot_model_path="models/SoulX-Singer/preprocessors/rosvot/rosvot/model.pt", 
+        rwbd_model_path="models/SoulX-Singer/preprocessors/rosvot/rwbd/model.pt", 
         device="cuda"
     )
     out = m.process(item)

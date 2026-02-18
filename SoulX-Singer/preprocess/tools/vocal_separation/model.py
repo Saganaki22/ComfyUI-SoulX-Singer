@@ -214,10 +214,10 @@ class VocalSeparator:
 if __name__ == "__main__":
     
     m = VocalSeparator(
-        sep_model_path="pretrained_models/mel-band-roformer-karaoke/mel_band_roformer_karaoke_becruily.ckpt",
-        sep_config_path="pretrained_models/mel-band-roformer-karaoke/config_karaoke_becruily.yaml",
-        der_model_path="pretrained_models/dereverb_mel_band_roformer/dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt",
-        der_config_path="pretrained_models/dereverb_mel_band_roformer/dereverb_mel_band_roformer_anvuew.yaml",
+        sep_model_path="models/SoulX-Singer/preprocessors/mel-band-roformer-karaoke/mel_band_roformer_karaoke_becruily.ckpt",
+        sep_config_path="models/SoulX-Singer/preprocessors/mel-band-roformer-karaoke/config_karaoke_becruily.yaml",
+        der_model_path="models/SoulX-Singer/preprocessors/dereverb_mel_band_roformer/dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt",
+        der_config_path="models/SoulX-Singer/preprocessors/dereverb_mel_band_roformer/dereverb_mel_band_roformer_anvuew.yaml",
         device="cuda"
     )
 

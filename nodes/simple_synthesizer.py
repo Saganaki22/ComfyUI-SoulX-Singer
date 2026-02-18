@@ -451,7 +451,19 @@ class SoulXSingerSimple:
             infer_prompt_data = data_processor.process(prompt_meta, str(prompt_path))
             
             # Synthesize all target segments
-            generated_len = int(target_meta_list[-1]["time"][1] / 1000 * config.audio.sample_rate)
+            end_time_ms = target_meta_list[-1]["time"][1]
+            if end_time_ms <= 0:
+                raise ValueError(
+                    f"Invalid target metadata: end time is {end_time_ms}ms. "
+                    "This usually means preprocessing failed to extract valid vocal segments. "
+                    "Try providing a longer/clearer audio prompt."
+                )
+            generated_len = int(end_time_ms / 1000 * config.audio.sample_rate)
+            if generated_len <= 0:
+                raise ValueError(
+                    f"Invalid generated length: {generated_len} samples. "
+                    f"End time: {end_time_ms}ms, Sample rate: {config.audio.sample_rate}"
+                )
             generated_merged = np.zeros(generated_len, dtype=np.float32)
             
             for idx, target_meta in enumerate(target_meta_list):

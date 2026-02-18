@@ -516,7 +516,7 @@ class F0Extractor:
 
 if __name__ == "__main__":
     model_path = (
-        "pretrained_models/rmvpe/rmvpe.pt"
+        "models/SoulX-Singer/preprocessors/rmvpe/rmvpe.pt"
     )
     audio_path = "./outputs/transcription/test.wav"
 

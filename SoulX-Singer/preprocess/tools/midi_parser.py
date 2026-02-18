@@ -28,7 +28,7 @@ MAX_SEGMENT_DUR_SUM_SEC = 60.0  # max cumulative note duration per segment (sec)
 MIN_GAP_THRESHOLD_SEC = 0.001  # ignore gaps smaller than this
 LONG_SILENCE_THRESHOLD_SEC = 0.05  # treat as separate <SP> if gap larger
 MAX_LEADING_SP_DUR_SEC = 2.0  # cap leading silence in a segment to this (sec)
-DEFAULT_RMVPE_MODEL_PATH = "pretrained_models/SoulX-Singer-Preprocess/rmvpe/rmvpe.pt"
+DEFAULT_RMVPE_MODEL_PATH = "models/SoulX-Singer/preprocessors/rmvpe/rmvpe.pt"
 
 
 @dataclass
@@ -639,7 +639,7 @@ if __name__ == "__main__":
         "--rmvpe_model_path",
         type=str,
         help="Path to RMVPE model",
-        default="pretrained_models/SoulX-Singer-Preprocess/rmvpe/rmvpe.pt",
+        default="models/SoulX-Singer/preprocessors/rmvpe/rmvpe.pt",
     )
     parser.add_argument(
         "--device",
